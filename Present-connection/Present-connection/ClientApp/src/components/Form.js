@@ -4,18 +4,21 @@ export class Form extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            clientFirstName: '',
-            clientLastName: '',
+            clientFirstName: 'Jonas',
+            clientLastName: 'Jonaitis',
             clientStatus: 'Physical',
-            clientCountry: '',
+            clientCountry: 'Algeria',
             clientPvmStatus: false,
-            supplierFirstName: '',
-            supplierLastName: '',
-            supplierCountry: '',
-            supplierPvmStatus: false,
+            supplierFirstName: 'Petras',
+            supplierLastName: 'Petraitis',
+            supplierCountry: 'Algeria',
+            supplierPvmStatus: true,
             order: 0,
             pvmPercent: 0,
-            countries: []
+            countries: [],
+            pvm: 0,
+            total: 0,
+            showResult: false
         };
 
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -35,15 +38,28 @@ export class Form extends Component {
         this.setState({
             [name]: value
         });
+        this.setState({ showResult: false })
+
     }
 
-    handleSubmit(event) {
-        console.log(this.state);
+    async handleSubmit(event) {
         event.preventDefault();
+        console.log(this.state);
+        const response = await fetch('pvm/getinvoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.state)
+        });
+        const data = await response.json();
+        this.setState(data);
+        this.setState({ showResult: true })
+        console.log(this.state);
     }
 
     async populateCountryData() {
-        const response = await fetch('pvm/GetCountriesAsync');
+        const response = await fetch('pvm/getcountries');
         const data = await response.json();
         console.log(data);
         this.setState({ countries: data });
@@ -52,6 +68,9 @@ export class Form extends Component {
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
+                <div>
+                    <h1>Saskaita faktūra XXX :</h1>
+                </div>
                 <div className="container row">
                 <div className="container col-sm">
                 <div className="form-group">
@@ -176,6 +195,15 @@ export class Form extends Component {
                 </div>
                 <br />
                 <input type="submit" value="Submit" />
+                <br />
+                <br />
+                { this.state.showResult &&
+                    <div>
+                        <h3>Užsakymas : {this.state.order}</h3>
+                        <h3>Pvm : {this.state.pvm}</h3>
+                        <h3>Iš viso : {this.state.total}</h3>
+                    </div>
+                }
             </form>
         );
     }

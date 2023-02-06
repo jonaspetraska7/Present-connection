@@ -1,4 +1,5 @@
-﻿using Common.Enum;
+﻿using Common.Dtos;
+using Common.Enum;
 
 namespace Common.Models
 {
@@ -11,6 +12,14 @@ namespace Common.Models
             Status = StatusEnum.Juridical;
             Country = country;
             IsPvmPayer = isPvmPayer;
+        }
+
+        public Supplier(FormDto dto, List<Country> countries)
+        {
+            FirstName = dto.supplierFirstName;
+            LastName = dto.supplierLastName;
+            Country = countries.Where(x => x.Name == dto.supplierCountry).First();
+            IsPvmPayer = dto.supplierPvmStatus;
         }
     }
 }

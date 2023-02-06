@@ -1,10 +1,11 @@
-﻿using Common.Models;
+﻿using Common.Interfaces;
+using Common.Models;
 
 namespace Common.Services
 {
-    public static class PvmCalculationService
+    public class PvmCalculationService : IPvmCalculationService
     {
-        public static double CalculatePvm(double order, int pvmPercent, Client client, Supplier supplier)
+        public double CalculatePvm(double order, int pvmPercent, Client client, Supplier supplier)
         {
             double pvm = 0;
 

@@ -1,11 +1,12 @@
-﻿using Common.Models;
+﻿using Common.Interfaces;
+using Common.Models;
 using Newtonsoft.Json.Linq;
 
 namespace Common.Services
 {
-    public class CountryApiService
+    public class CountryApiService : ICountryApiService
     {
-        public static async Task<List<Country>> GetCountryListAsync()
+        public async Task<List<Country>> GetCountryListAsync()
         {
             var countryList = new List<Country>();
 

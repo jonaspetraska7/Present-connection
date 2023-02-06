@@ -1,8 +1,13 @@
+using Common.Interfaces;
+using Common.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<ICountryApiService, CountryApiService>();
+builder.Services.AddSingleton<IPvmCalculationService, PvmCalculationService>();
 
 var app = builder.Build();
 

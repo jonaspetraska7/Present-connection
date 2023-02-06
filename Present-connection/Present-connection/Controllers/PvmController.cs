@@ -1,6 +1,6 @@
 ﻿using Common.Dtos;
+using Common.Interfaces;
 using Common.Models;
-using Common.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Present_connection.Controllers
@@ -9,22 +9,32 @@ namespace Present_connection.Controllers
     [Route("[controller]")]
     public class PvmController : ControllerBase
     {
+        private readonly IPvmCalculationService _pvmCalculationService;
+        private readonly ICountryApiService _countryApiService;
 
-        [HttpPost]
-        public async Task<int> GetPvmAsync([FromBody] FormDto data)
+        public PvmController(IPvmCalculationService pvmCalculationService, ICountryApiService countryApiService)
         {
-            var countries = await CountryApiService.GetCountryListAsync();
-            var clientCountry = countries.Where(x => x.Name == data.clientCountry);
-
-            //var client = new Client(data.clientFirstName, data.clientLastName, data.clientStatus,)
-            //var pvm = PvmCalculationService.CalculatePvm(data.order, data.pvmPercent)
-            return 0;
+            _countryApiService = countryApiService;
+            _pvmCalculationService = pvmCalculationService;
         }
 
-        [HttpGet]
+        [HttpPost("GetInvoice")]
+        public async Task<FormDto> GetInvoiceAsync([FromBody] FormDto data)
+        {
+            var countries = await _countryApiService.GetCountryListAsync();
+            var client = new Client(data, countries);
+            var supplier = new Supplier(data, countries);
+
+            data.pvm = _pvmCalculationService.CalculatePvm(data.order, data.pvmPercent, client, supplier);
+            data.total = data.order + data.pvm;
+
+            return data;
+        }
+
+        [HttpGet("GetCountries")]
         public async Task<List<string>> GetCountriesAsync()
         {
-            var countries = await CountryApiService.GetCountryListAsync();
+            var countries = await _countryApiService.GetCountryListAsync();
             return countries.Select(x => x.Name).ToList();
         }
     }
